@@ -39,6 +39,20 @@ def gradle_command() -> list[str]:
 def test_java() -> None:
     run([*gradle_command(), "clean", "test"], cwd=CAR_SERVICE)
 
+def lint_java() -> None:
+    run(
+        [*gradle_command(), "checkstyleMain", "checkstyleTest"],
+        cwd=CAR_SERVICE,
+    )
+
+
+def lint() -> None:
+    lint_java()
+
+
+def verify() -> None:
+    test_java()
+    lint_java()
 
 def test_python() -> None:
     run([sys.executable, "-m", "pytest"], cwd=PRICING_SERVICE)
@@ -190,6 +204,9 @@ def main() -> int:
             "compose-up",
             "compose-down",
             "smoke",
+            "lint-java",
+            "lint",
+            "verify",
         ],
     )
     args = parser.parse_args()
@@ -207,6 +224,9 @@ def main() -> int:
         "compose-up": compose_up,
         "compose-down": compose_down,
         "smoke": smoke,
+        "lint-java": lint_java,
+        "lint": lint,
+        "verify": verify,
     }
 
     try:
